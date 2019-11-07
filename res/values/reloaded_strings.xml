@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2022 ReloadedOS
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- ReloadedOS versioning -->
+    <string name="reloaded_version_title">ReloadedOS version</string>
+
+    <!-- Reloaded Xtras -->
+    <string name="reloaded_xtras_dash_title">Reloaded Xtras</string>
+    <string name="reloaded_xtras_summary">Additional customizations</string>
+
+    <!-- Refresh rate -->
+    <string name="refresh_rate_title">Refresh rate</string>
+    <string name="min_refresh_rate_title">Minimum refresh rate</string>
+    <string name="max_refresh_rate_title">Maximum refresh rate</string>
+    <string name="preferred_refresh_rate_title">Preferred refresh rate</string>
+    <string name="preferred_refresh_rate_info">Preferred refresh rate will be used as the default refresh rate for user interactions, as long as it\'s within the minimum and maximum refresh rate.</string>
+
+    <!-- Swipe to screenshot -->
+    <string name="swipe_to_screenshot_title">Swipe to screenshot</string>
+    <string name="swipe_to_screenshot_summary">Swipe 3 fingers down the screen to take a screenshot</string>
+
+</resources>
