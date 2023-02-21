@@ -225,7 +225,14 @@
                 android:key="choose_network_key"
                 android:title="@string/choose_network_title"
                 settings:controller="com.android.settings.network.telephony.gsm.OpenNetworkSelectPagePreferenceController"/>
-        </PreferenceCategory>
+    </PreferenceCategory>
+
+    <SwitchPreference
+	    android:persistent="true" 
+	    android:title="SMART 5G"
+	    android:key="smart_5g_mode_key"
+	    android:summary="smort 5g"
+	    settings:controller="com.android.settings.network.telephony.SmartFiveGPreferenceController"/>
 
         <!--We want separate APN setting from reset of settings because we want user to change it with caution-->
         <com.android.settingslib.RestrictedPreference

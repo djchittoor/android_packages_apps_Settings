@@ -43,6 +43,7 @@ import com.android.settings.datausage.DataUsageSummaryPreferenceController;
 import com.android.settings.network.ActiveSubscriptionsListener;
 import com.android.settings.network.CarrierWifiTogglePreferenceController;
 import com.android.settings.network.SubscriptionUtil;
+import com.android.settings.network.telephony.SmartFiveGPreferenceController;
 import com.android.settings.network.telephony.cdma.CdmaSubscriptionPreferenceController;
 import com.android.settings.network.telephony.cdma.CdmaSystemSelectPreferenceController;
 import com.android.settings.network.telephony.gsm.AutoSelectPreferenceController;
@@ -231,6 +232,7 @@ public class MobileNetworkSettings extends AbstractMobileNetworkSettings {
                 .addListener(videoCallingPreferenceController);
         use(ContactDiscoveryPreferenceController.class).init(getParentFragmentManager(), mSubId);
         use(NrAdvancedCallingPreferenceController.class).init(mSubId);
+        use(SmartFiveGPreferenceController.class).init(mSubId);
     }
 
     @Override

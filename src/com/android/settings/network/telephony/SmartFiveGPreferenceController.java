@@ -1,4 +1,4 @@
-package com.nothing.settings.network.telephony;
+package com.android.settings.network.telephony;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -17,8 +17,7 @@ import android.util.Log;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
-import com.android.settings.R$string;
-import com.android.settings.R$style;
+import com.android.settings.R;
 import com.android.settings.network.AllowedNetworkTypesListener;
 import com.android.settings.network.telephony.MobileNetworkUtils;
 import com.android.settings.network.telephony.TelephonyTogglePreferenceController;
@@ -28,7 +27,6 @@ import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.core.lifecycle.events.OnStop;
 import com.android.settingslib.utils.ThreadUtils;
 import java.util.Objects;
-/* loaded from: classes2.dex */
 public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceController implements LifecycleObserver, OnStart, OnStop {
     private static final String HIDE_SMART_5G = "hide_smart_5g_bool";
     private static final String LOG_5G_Event_SMART_5G = "smart_5g";
@@ -41,77 +39,53 @@ public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceCon
     private boolean mReceiverRegistered;
     private TelephonyManager mTelephonyManager;
 
-    @Override // com.android.settings.network.telephony.TelephonyTogglePreferenceController, com.android.settings.core.TogglePreferenceController, com.android.settings.slices.Sliceable
-    public /* bridge */ /* synthetic */ Class getBackgroundWorkerClass() {
-        return super.getBackgroundWorkerClass();
-    }
-
-    @Override // com.android.settings.network.telephony.TelephonyTogglePreferenceController, com.android.settings.core.TogglePreferenceController, com.android.settings.slices.Sliceable
-    public /* bridge */ /* synthetic */ IntentFilter getIntentFilter() {
-        return super.getIntentFilter();
-    }
-
-    @Override // com.android.settings.network.telephony.TelephonyTogglePreferenceController, com.android.settings.core.TogglePreferenceController, com.android.settings.slices.Sliceable
-    public /* bridge */ /* synthetic */ boolean hasAsyncUpdate() {
-        return super.hasAsyncUpdate();
-    }
-
-    @Override // com.android.settings.network.telephony.TelephonyTogglePreferenceController, com.android.settings.core.TogglePreferenceController, com.android.settings.slices.Sliceable
-    public /* bridge */ /* synthetic */ boolean useDynamicSliceSummary() {
-        return super.useDynamicSliceSummary();
-    }
-
     public SmartFiveGPreferenceController(Context context, String str) {
         super(context, str);
         this.mReceiverRegistered = false;
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { // from class: com.nothing.settings.network.telephony.SmartFiveGPreferenceController.1
-            @Override // android.content.BroadcastReceiver
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
             public void onReceive(Context context2, Intent intent) {
-                if (SmartFiveGPreferenceController.this.mPreference != null) {
-                    Log.d(SmartFiveGPreferenceController.TAG, "DDS is changed");
-                    SmartFiveGPreferenceController smartFiveGPreferenceController = SmartFiveGPreferenceController.this;
-                    smartFiveGPreferenceController.updateState(smartFiveGPreferenceController.mPreference);
+                if (mPreference != null) {
+                    Log.d(TAG, "DDS is changed");
+                    updateState(mPreference);
                 }
             }
         };
-        this.mDefaultDataChangedReceiver = broadcastReceiver;
-        this.mTelephonyManager = (TelephonyManager) context.getSystemService(TelephonyManager.class);
-        if (!this.mReceiverRegistered) {
-            this.mContext.registerReceiver(broadcastReceiver, new IntentFilter("android.intent.action.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED"));
-            this.mReceiverRegistered = true;
+        mDefaultDataChangedReceiver = broadcastReceiver;
+        mTelephonyManager = (TelephonyManager) context.getSystemService(TelephonyManager.class);
+        if (!mReceiverRegistered) {
+            mContext.registerReceiver(broadcastReceiver, new IntentFilter(
+                    "android.intent.action.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED"));
+            mReceiverRegistered = true;
         }
     }
 
-    public SmartFiveGPreferenceController init(int i) {
-        if (this.mPhoneTelephonyCallback == null) {
-            this.mPhoneTelephonyCallback = new PhoneTelephonyCallback();
+    public SmartFiveGPreferenceController init(int subId) {
+        if (mPhoneTelephonyCallback == null) {
+            mPhoneTelephonyCallback = new PhoneTelephonyCallback();
         }
-        if (this.mAllowedNetworkTypesListener == null) {
-            AllowedNetworkTypesListener allowedNetworkTypesListener = new AllowedNetworkTypesListener(this.mContext.getMainExecutor());
-            this.mAllowedNetworkTypesListener = allowedNetworkTypesListener;
-            allowedNetworkTypesListener.setAllowedNetworkTypesListener(new AllowedNetworkTypesListener.OnAllowedNetworkTypesListener() { // from class: com.nothing.settings.network.telephony.SmartFiveGPreferenceController$$ExternalSyntheticLambda0
-                @Override // com.android.settings.network.AllowedNetworkTypesListener.OnAllowedNetworkTypesListener
-                public final void onAllowedNetworkTypesChanged() {
-                    SmartFiveGPreferenceController.this.lambda$init$0();
-                }
-            });
+        if (mAllowedNetworkTypesListener == null) {
+            AllowedNetworkTypesListener allowedNetworkTypesListener =
+                    new AllowedNetworkTypesListener(mContext.getMainExecutor());
+            mAllowedNetworkTypesListener = allowedNetworkTypesListener;
+            allowedNetworkTypesListener.setAllowedNetworkTypesListener(
+                    () -> updatePreference());
         }
-        if (!SubscriptionManager.isValidSubscriptionId(this.mSubId) || this.mSubId != i) {
-            this.mSubId = i;
-            if (this.mTelephonyManager == null) {
-                this.mTelephonyManager = (TelephonyManager) this.mContext.getSystemService(TelephonyManager.class);
+        if (!SubscriptionManager.isValidSubscriptionId(mSubId) || mSubId != subId) {
+            mSubId = subId;
+            if (mTelephonyManager == null) {
+                mTelephonyManager = (TelephonyManager) mContext.getSystemService(TelephonyManager.class);
             }
-            if (SubscriptionManager.isValidSubscriptionId(i)) {
-                this.mTelephonyManager = this.mTelephonyManager.createForSubscriptionId(i);
+            if (SubscriptionManager.isValidSubscriptionId(subId)) {
+                mTelephonyManager = mTelephonyManager.createForSubscriptionId(subId);
             }
             return this;
         }
         return this;
     }
 
-    /* renamed from: updatePreference */
-    public void lambda$init$0() {
-        Preference preference = this.mPreference;
+    public void updatePreference() {
+        Preference preference = mPreference;
         if (preference != null) {
             updateState(preference);
         }
@@ -119,40 +93,40 @@ public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceCon
 
     @Override // com.android.settings.network.telephony.TelephonyTogglePreferenceController, com.android.settings.network.telephony.TelephonyAvailabilityCallback
     public int getAvailabilityStatus(int i) {
-        return isSwitchVisible(this.mContext, this.mSubId) ? 0 : 2;
+        return isSwitchVisible(mContext, mSubId) ? 0 : 2;
     }
 
     @Override // com.android.settings.core.TogglePreferenceController, com.android.settings.core.BasePreferenceController, com.android.settingslib.core.AbstractPreferenceController
     public void displayPreference(PreferenceScreen preferenceScreen) {
         super.displayPreference(preferenceScreen);
-        this.mPreference = preferenceScreen.findPreference(getPreferenceKey());
+        mPreference = preferenceScreen.findPreference(getPreferenceKey());
     }
 
     @Override // com.android.settingslib.core.lifecycle.events.OnStart
     public void onStart() {
-        PhoneTelephonyCallback phoneTelephonyCallback = this.mPhoneTelephonyCallback;
+        PhoneTelephonyCallback phoneTelephonyCallback = mPhoneTelephonyCallback;
         if (phoneTelephonyCallback != null) {
-            phoneTelephonyCallback.register(this.mSubId, this.mTelephonyManager);
+            phoneTelephonyCallback.register(mSubId, mTelephonyManager);
         }
-        AllowedNetworkTypesListener allowedNetworkTypesListener = this.mAllowedNetworkTypesListener;
+        AllowedNetworkTypesListener allowedNetworkTypesListener = mAllowedNetworkTypesListener;
         if (allowedNetworkTypesListener != null) {
-            allowedNetworkTypesListener.register(this.mContext, this.mSubId);
+            allowedNetworkTypesListener.register(mContext, mSubId);
         }
     }
 
     @Override // com.android.settingslib.core.lifecycle.events.OnStop
     public void onStop() {
-        if (this.mReceiverRegistered) {
-            this.mContext.unregisterReceiver(this.mDefaultDataChangedReceiver);
-            this.mReceiverRegistered = false;
+        if (mReceiverRegistered) {
+            mContext.unregisterReceiver(mDefaultDataChangedReceiver);
+            mReceiverRegistered = false;
         }
-        PhoneTelephonyCallback phoneTelephonyCallback = this.mPhoneTelephonyCallback;
+        PhoneTelephonyCallback phoneTelephonyCallback = mPhoneTelephonyCallback;
         if (phoneTelephonyCallback != null) {
             phoneTelephonyCallback.unregister();
         }
-        AllowedNetworkTypesListener allowedNetworkTypesListener = this.mAllowedNetworkTypesListener;
+        AllowedNetworkTypesListener allowedNetworkTypesListener = mAllowedNetworkTypesListener;
         if (allowedNetworkTypesListener != null) {
-            allowedNetworkTypesListener.unregister(this.mContext, this.mSubId);
+            allowedNetworkTypesListener.unregister(mContext, mSubId);
         }
     }
 
@@ -169,7 +143,7 @@ public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceCon
             switchPreference.setChecked(false);
         }
         int preferredNetworkMode = getPreferredNetworkMode();
-        boolean isSwitchVisible = isSwitchVisible(this.mContext, this.mSubId);
+        boolean isSwitchVisible = isSwitchVisible(mContext, mSubId);
         if (isCallStateIdle() && preferredNetworkMode > 22 && isSwitchVisible) {
             z = true;
         }
@@ -178,49 +152,32 @@ public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceCon
 
     @Override // com.android.settings.core.TogglePreferenceController
     public boolean setChecked(boolean z) {
-        if (!SubscriptionManager.isValidSubscriptionId(this.mSubId)) {
+        if (!SubscriptionManager.isValidSubscriptionId(mSubId)) {
             return false;
         }
         if (!z) {
-            showDisableSmart5gDialog();
+        Log.d(TAG, "showDisableSmart5gDialog");
         } else {
-            MobileNetworkUtils.setSmart5gMode(this.mContext, 1, this.mSubId);
-            MobileNetworkUtils.log5GEvent(this.mContext, LOG_5G_Event_SMART_5G, 1);
+            MobileNetworkUtils.setSmart5gMode(mContext, 1, mSubId);
+           // MobileNetworkUtils.log5GEvent(mContext, LOG_5G_Event_SMART_5G, 1);
         }
         return true;
     }
 
-    private void showDisableSmart5gDialog() {
-        Log.d(TAG, "showDisableSmart5gDialog");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.mContext, R$style.TelephonyToggleAlertDialog);
-        DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() { // from class: com.nothing.settings.network.telephony.SmartFiveGPreferenceController.2
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (i == -1) {
-                    MobileNetworkUtils.setSmart5gMode(((AbstractPreferenceController) SmartFiveGPreferenceController.this).mContext, 0, ((TelephonyTogglePreferenceController) SmartFiveGPreferenceController.this).mSubId);
-                    MobileNetworkUtils.log5GEvent(((AbstractPreferenceController) SmartFiveGPreferenceController.this).mContext, SmartFiveGPreferenceController.LOG_5G_Event_SMART_5G, 0);
-                    return;
-                }
-                SmartFiveGPreferenceController.this.lambda$init$0();
-            }
-        };
-        builder.setMessage(R$string.nt_turn_off_smart5g_dialog_title).setNegativeButton(this.mContext.getResources().getString(R$string.cancel), onClickListener).setPositiveButton(this.mContext.getResources().getString(R$string.condition_turn_off), onClickListener).create().show();
-    }
-
     @Override // com.android.settings.core.TogglePreferenceController
     public boolean isChecked() {
-        return MobileNetworkUtils.getSmart5gMode(this.mContext, this.mSubId) == 1;
+        return true;
     }
 
     boolean isCallStateIdle() {
-        Integer num = this.mCallState;
+        Integer num = mCallState;
         boolean z = num == null || num.intValue() == 0;
         Log.d(TAG, "isCallStateIdle:" + z);
         return z;
     }
 
     private int getPreferredNetworkMode() {
-        return MobileNetworkUtils.getNetworkTypeFromRaf((int) this.mTelephonyManager.getAllowedNetworkTypesForReason(0));
+        return MobileNetworkUtils.getNetworkTypeFromRaf((int) mTelephonyManager.getAllowedNetworkTypesForReason(0));
     }
 
     /* loaded from: classes2.dex */
@@ -232,32 +189,26 @@ public class SmartFiveGPreferenceController extends TelephonyTogglePreferenceCon
 
         @Override // android.telephony.TelephonyCallback.CallStateListener
         public void onCallStateChanged(int i) {
-            SmartFiveGPreferenceController.this.mCallState = Integer.valueOf(i);
+            mCallState = Integer.valueOf(i);
             SmartFiveGPreferenceController smartFiveGPreferenceController = SmartFiveGPreferenceController.this;
-            smartFiveGPreferenceController.updateState(smartFiveGPreferenceController.mPreference);
+            updateState(mPreference);
         }
 
         public void register(int i, TelephonyManager telephonyManager) {
-            this.mLocalTelephonyManager = telephonyManager;
-            SmartFiveGPreferenceController.this.mCallState = Integer.valueOf(telephonyManager.getCallState(i));
-            TelephonyManager telephonyManager2 = this.mLocalTelephonyManager;
+            mLocalTelephonyManager = telephonyManager;
+            mCallState = Integer.valueOf(telephonyManager.getCallState(i));
             Handler uiThreadHandler = ThreadUtils.getUiThreadHandler();
             Objects.requireNonNull(uiThreadHandler);
-            telephonyManager2.registerTelephonyCallback(new HandlerExecutor(uiThreadHandler), this);
+            mLocalTelephonyManager.registerTelephonyCallback(new HandlerExecutor(uiThreadHandler), this);
         }
 
         public void unregister() {
-            SmartFiveGPreferenceController.this.mCallState = null;
-            this.mLocalTelephonyManager.unregisterTelephonyCallback(this);
+            mCallState = null;
+            mLocalTelephonyManager.unregisterTelephonyCallback(this);
         }
     }
 
     public static boolean isSwitchVisible(Context context, int i) {
-        PersistableBundle configForSubId;
-        CarrierConfigManager carrierConfigManager = (CarrierConfigManager) context.getSystemService(CarrierConfigManager.class);
-        if (carrierConfigManager == null || (configForSubId = carrierConfigManager.getConfigForSubId(i)) == null) {
             return true;
-        }
-        return !configForSubId.getBoolean(HIDE_SMART_5G);
     }
 }

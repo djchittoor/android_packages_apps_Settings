@@ -1031,4 +1031,20 @@ public class MobileNetworkUtils {
                 .launch();
     }
 
+        public static void setSmart5gMode(Context context, int i, int i2) {
+        Log.d("MobileNetworkUtils", "[setSmart5gMode]: mode = " + i + "; subId = " + i2);
+        ContentResolver contentResolver = context.getContentResolver();
+        Settings.Global.putInt(contentResolver, "smart_5g_switch", i);
+    }
+
+    public static int getSmart5gMode(Context context, int i) {
+        PersistableBundle configForSubId;
+        CarrierConfigManager carrierConfigManager = (CarrierConfigManager) context.getSystemService(CarrierConfigManager.class);
+        int i2 = (carrierConfigManager == null || (configForSubId = carrierConfigManager.getConfigForSubId(i)) == null || configForSubId.getBoolean("nt_carrier_default_smart_5g_enabled_bool")) ? 1 : 0;
+        ContentResolver contentResolver = context.getContentResolver();
+        int i3 = Settings.Global.getInt(contentResolver, "smart_5g_switch" + i, i2);
+        Log.d("MobileNetworkUtils", "[getSmart5gMode]: mode = " + i3 + "; subId = " + i);
+        return i3;
+    }
+
 }
